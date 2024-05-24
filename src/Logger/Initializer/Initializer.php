@@ -44,7 +44,7 @@ class Initializer {
                 $logger = new \Monolog\Logger($opts['logger.channel_name']);
 
                 $handler = new \Monolog\Handler\SyslogHandler(
-                    '[PHP ' . $opts['logger.component'] . ' Info]: ',
+                    '',
                     \LOG_USER,
                     $opts['logger.min_level'],
                     true,
@@ -92,7 +92,7 @@ class Initializer {
 
     private static function addStandardDataProcessor(\Monolog\Logger $logger, RidProvider $ridProvider, $component) {
         $logger->pushProcessor(function (array $record) use ($ridProvider, $component) {
-            $record['message'] = '[date: ' . date('Y-m-d H-i-s') . '] [' . $component .'] [' . $ridProvider->getRid() .  '] ' . $record['message'];
+            $record['message'] = '[PHP ' . $component . ' ' . $record['level_name'] . ']: [date: ' . date('Y-m-d H-i-s') . '] [' . $component .'] [' . $ridProvider->getRid() .  '] ' . $record['message'];
 
             return $record;
         });
