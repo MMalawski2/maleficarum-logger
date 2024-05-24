@@ -44,7 +44,7 @@ class Initializer {
                 $logger = new \Monolog\Logger($opts['logger.channel_name']);
 
                 $handler = new \Monolog\Handler\SyslogHandler(
-                    '[PHP ' . $opts['logger.component'] . ' Info]: '.
+                    '[PHP ' . $opts['logger.component'] . ' Info]: ',
                     \LOG_USER,
                     $opts['logger.min_level'],
                     true,
