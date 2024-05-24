@@ -43,10 +43,16 @@ class Initializer {
 
                 $logger = new \Monolog\Logger($opts['logger.channel_name']);
 
-                $handler = new \Monolog\Handler\SyslogHandler('[PHP][' . $opts['logger.rid_provider']->getRid() . '][' .$opts['logger.component']. ']', \LOG_USER,
-                    $opts['logger.min_level'], true, \LOG_PID);
+                $handler = new \Monolog\Handler\SyslogHandler(
+                    '[PHP ' . $opts['logger.component'] . ' Info]: '.
+                    \LOG_USER,
+                    $opts['logger.min_level'],
+                    true,
+                    \LOG_PID);
 
                 $logger->pushHandler($handler);
+
+                self::addStandardDataProcessor($logger, $opts['logger.rid_provider'], $opts['logger.component']);
 
                 if (isset($opts['logger.message_prefix'])) {
                     self::addMessagePrefixProcessor($logger, $opts['logger.message_prefix']);
@@ -79,6 +85,14 @@ class Initializer {
     private static function addMessagePrefixProcessor(\Monolog\Logger $logger, string $messagePrefix) {
         $logger->pushProcessor(function (array $record) use ($messagePrefix) {
             $record['message'] = $messagePrefix . $record['message'];
+
+            return $record;
+        });
+    }
+
+    private static function addStandardDataProcessor(\Monolog\Logger $logger, RidProvider $ridProvider, $component) {
+        $logger->pushProcessor(function (array $record) use ($ridProvider, $component) {
+            $record['message'] = '[date: ' . date('Y-m-d H-i-s') . '] [' . $component .'] [' . $ridProvider->getRid() .  '] ' . $record['message'];
 
             return $record;
         });
